@@ -12,8 +12,8 @@ namespace EvernoteClone.Model
         [Indexed]
         public int NotebookId { get; set; }
         public string Title { get; set; }
-        public DateTime CreateAt { get; set; }
-        public DateTime UpdateAt { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public DateTime UpdatedTime { get; set; }
         public string FileLocation { get; set; }
     }
 }

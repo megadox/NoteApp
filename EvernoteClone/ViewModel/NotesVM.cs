@@ -35,5 +35,27 @@ namespace EvernoteClone.ViewModel
 			NewNoteCommand = new NewNoteCommand(this);
 		}
 
+		public void CreateNotebook()
+		{
+			Notebook newNotebook = new Notebook()
+			{
+				Name="New notebook"
+			};
+
+			Helpers.DatabaseHelper.Insert(newNotebook);
+		}
+
+		public void CreateNote(int notebookId)
+		{
+			Note newNote = new Note()
+			{
+				NotebookId = notebookId,
+				CreatedTime = DateTime.Now,
+				UpdatedTime = DateTime.Now,
+				Title = "New note"
+			};
+
+			Helpers.DatabaseHelper.Insert(newNote);
+		}
 	}
 }
