@@ -24,9 +24,35 @@
                           />
             </MenuItem>
         </Menu>
-        <Grid>
+        <ListView DockPanel.Dock="Left"
+                  Width="140"
+                  ItemsSource="{Binding Notebooks}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            
+        </ListView>
+        <ListView DockPanel.Dock="Left"
+                  Width="140"
+                  SelectedItem="{Binding SelectedNotebook, Mode=TwoWay}"
+                  ItemsSource="{Binding Notes}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Title}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Content="Speech"
+                        Click="SpeechButton_Click"/>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid/>
+        
 
 
-        </Grid>
     </DockPanel>
 </Window>

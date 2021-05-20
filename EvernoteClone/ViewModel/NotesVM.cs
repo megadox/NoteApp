@@ -3,23 +3,28 @@ using EvernoteClone.ViewModel.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
 
 namespace EvernoteClone.ViewModel
 {
-    public class NotesVM
+    public class NotesVM : INotifyPropertyChanged
     {
         public ObservableCollection<Notebook> Notebooks { get; set; }
 
 		private Notebook selectedNotebook;
 
-		public Notebook SelectedNotebook
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public Notebook SelectedNotebook
 		{
 			get { return selectedNotebook; }
 			set 
 			{ 
-				selectedNotebook = value; 
-				//TODO : get notes
+				selectedNotebook = value;
+				OnPropertyChanged("SelectedNotebook");
+				GetNotes();
 			}
 		}
 
@@ -33,6 +38,12 @@ namespace EvernoteClone.ViewModel
 		{
 			NewNotebookCommand = new NewNotebookCommand(this);
 			NewNoteCommand = new NewNoteCommand(this);
+
+			Notebooks = new ObservableCollection<Notebook>();
+			Notes = new ObservableCollection<Note>();
+
+			GetNotebooks();
+			GetNotes();
 		}
 
 		public void CreateNotebook()
@@ -43,6 +54,8 @@ namespace EvernoteClone.ViewModel
 			};
 
 			Helpers.DatabaseHelper.Insert(newNotebook);
+
+			GetNotebooks();
 		}
 
 		public void CreateNote(int notebookId)
@@ -52,10 +65,43 @@ namespace EvernoteClone.ViewModel
 				NotebookId = notebookId,
 				CreatedTime = DateTime.Now,
 				UpdatedTime = DateTime.Now,
-				Title = "New note"
+				Title = $"Note for {DateTime.Now.ToString()}"
 			};
 
 			Helpers.DatabaseHelper.Insert(newNote);
+
+			GetNotes();
 		}
+
+		private void GetNotebooks()
+        {
+			var notebooks = Helpers.DatabaseHelper.Read<Notebook>();
+
+			Notebooks.Clear();
+            foreach (var notebook in notebooks)
+            {
+				Notebooks.Add(notebook);
+            }
+
+        }
+
+		private void GetNotes()
+		{
+			if (SelectedNotebook == null) return;
+
+			var notes = Helpers.DatabaseHelper.Read<Note>().Where(n =>n.NotebookId == SelectedNotebook.Id).ToList();
+
+			Notes.Clear();
+			foreach (var note in notes)
+			{
+				Notes.Add(note);
+			}
+
+		}
+
+		private void OnPropertyChanged(string propertyname)
+        {
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+        }
 	}
 }
