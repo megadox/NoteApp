@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EvernoteClone.View"
+        xmlns:uc="clr-namespace:EvernoteClone.View.UserControls"
         xmlns:vm="clr-namespace:EvernoteClone.ViewModel"
         mc:Ignorable="d"
         Title="NotesWindow" Height="450" Width="800">
@@ -30,12 +31,13 @@
             </StatusBarItem>
         </StatusBar>
         <ListView DockPanel.Dock="Left"
+                  Background="MidnightBlue"
                   Width="140"
                   SelectedValue="{Binding SelectedNotebook, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   ItemsSource="{Binding Notebooks}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <uc:DisplayNotebook Notebook="{Binding}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
             
@@ -46,7 +48,7 @@
                   ItemsSource="{Binding Notes}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Title}" />
+                    <uc:DisplayNote Note="{Binding}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
@@ -54,16 +56,34 @@
             <ToolBar>
                 <Button Content="Speech"
                         Click="SpeechButton_Click"/>
-                <Button x:Name="boldButton"
+                <ToggleButton x:Name="boldButton"
                         Click="boldButton_Click">
                     <TextBlock Text="B"
                                FontWeight="Bold"/>
-                </Button>
+                </ToggleButton>
+                <ToggleButton x:Name="italicButton"
+                              Click="italicButton_Click">
+                    <TextBlock Text="I"
+                               FontStyle="Italic"/>
+                </ToggleButton>
+                <ToggleButton x:Name="underlineButton"
+                              Click="underlineButton_Click">
+                    <TextBlock Text="U"
+                               TextDecorations="Underline"/>
+                </ToggleButton>
+                <ComboBox x:Name="fontFamilyComboBox"
+                          Width="100"
+                          SelectionChanged="fontFamilyComboBox_SelectionChanged" />
+                <ComboBox x:Name="fontSizeComboBox"
+                          Width="50"
+                          IsEditable="True"
+                          TextBoxBase.TextChanged="fontSizeComboBox_TextChanged"/>
             </ToolBar>
         </ToolBarTray>
         <Grid>
             <RichTextBox x:Name="contentRichTextBox"
-                         TextChanged="contentRichTextBox_TextChanged"/>
+                         TextChanged="contentRichTextBox_TextChanged"
+                         SelectionChanged="contentRichTextBox_SelectionChanged"/>
         </Grid>
 
 
