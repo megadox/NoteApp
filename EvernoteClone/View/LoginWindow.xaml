@@ -24,7 +24,7 @@
                     CommandParameter="{Binding User}"
                     Margin="0,5"
                     Content="Login" />
-            <TextBlock Text="Regiter"
+            <TextBlock Text="Register"
                        Foreground="DodgerBlue"
                        TextDecorations="Underline">
                 <i:Interaction.Triggers>
@@ -34,21 +34,22 @@
                 </i:Interaction.Triggers>
             </TextBlock>
         </StackPanel>
-        <StackPanel Visibility="{Binding RegisterVis}">
+        <StackPanel Visibility="{Binding RegisterVis}"
+                    Margin="10,0">
             <TextBlock Text="UserName:" />
-            <TextBox Text="{Binding User.Username, Mode=TwoWay}" />
+            <TextBox Text="{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="Name:" />
-            <TextBox Text="{Binding User.Name, Mode=TwoWay}" />
+            <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="Last Name:" />
-            <TextBox Text="{Binding User.Lastname, Mode=TwoWay}" />
+            <TextBox Text="{Binding Lastname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="Password:" />
-            <TextBox Text="{Binding User.Password, Mode=TwoWay}" />
+            <TextBox Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="Confirm Password:" />
-            <TextBox Text="{Binding User.ConfirmPassword, Mode=TwoWay}" />
+            <TextBox Text="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <Button Command="{Binding RegisterCommand}"
                     CommandParameter="{Binding User}"
                     Margin="0,5"
-                    Content="Login" />
+                    Content="Register" />
             <TextBlock Text="Login"
                        Foreground="DodgerBlue"
                        TextDecorations="Underline">
