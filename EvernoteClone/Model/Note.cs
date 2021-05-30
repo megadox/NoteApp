@@ -5,12 +5,16 @@ using System.Text;
 
 namespace EvernoteClone.Model
 {
-    public class Note
+    public interface HasId
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
-        [Indexed]
-        public int NotebookId { get; set; }
+        public string Id { get; set; }
+    }
+
+
+    public class Note: HasId
+    {        
+        public string Id { get; set; }
+        public string NotebookId { get; set; }
         public string Title { get; set; }
         public DateTime CreatedTime { get; set; }
         public DateTime UpdatedTime { get; set; }
