@@ -16,6 +16,8 @@ using System.Threading;
 using System.Windows.Controls.Primitives;
 using EvernoteClone.ViewModel;
 using System.IO;
+using Azure.Storage.Blobs;
+using System.Threading.Tasks;
 
 namespace EvernoteClone.View
 {
@@ -76,9 +78,12 @@ namespace EvernoteClone.View
             {
                 if (!string.IsNullOrEmpty(viewModel.SelectedNote.FileLocation))
                 {
-                    FileStream fileStream = new FileStream(viewModel.SelectedNote.FileLocation, FileMode.Open);
-                    var contents = new TextRange(contentRichTextBox.Document.ContentStart, contentRichTextBox.Document.ContentEnd);
-                    contents.Load(fileStream, DataFormats.Rtf);
+                    using (FileStream fileStream = new FileStream(viewModel.SelectedNote.FileLocation, FileMode.Open))
+                    {
+                        var contents = new TextRange(contentRichTextBox.Document.ContentStart, contentRichTextBox.Document.ContentEnd);
+                        contents.Load(fileStream, DataFormats.Rtf);
+                    }
+                        
                 }
             }
             
@@ -182,15 +187,33 @@ namespace EvernoteClone.View
             contentRichTextBox.Selection.ApplyPropertyValue(Inline.FontSizeProperty, fontSizeComboBox.Text);
         }
 
-        private void saveButton_Click(object sender, RoutedEventArgs e)
+        private async void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            string rtfFile = System.IO.Path.Combine(Environment.CurrentDirectory, $"{viewModel.SelectedNote.Id}.rtf");
-            viewModel.SelectedNote.FileLocation = rtfFile;
-            ViewModel.Helpers.DatabaseHelper.Update(viewModel.SelectedNote);
+            string fileName = $"{viewModel.SelectedNote.Id}.rtf";
+            string rtfFile = System.IO.Path.Combine(Environment.CurrentDirectory,fileName);            
+            
+            using (FileStream fileStream = new FileStream(rtfFile, FileMode.Create))
+            {
+                var contents = new TextRange(contentRichTextBox.Document.ContentStart, contentRichTextBox.Document.ContentEnd);
+                contents.Save(fileStream, DataFormats.Rtf);
+            }
 
-            FileStream fileStream = new FileStream(rtfFile, FileMode.Create);
-            var contents = new TextRange(contentRichTextBox.Document.ContentStart, contentRichTextBox.Document.ContentEnd);
-            contents.Save(fileStream, DataFormats.Rtf);
+            viewModel.SelectedNote.FileLocation = await UpdateFile(rtfFile, fileName);
+            await ViewModel.Helpers.DatabaseHelper.Update(viewModel.SelectedNote);
+        }
+
+        private async Task<string> UpdateFile(string rtfFilePath, string fileName)
+        {
+            string connectionString = "DefaultEndpointsProtocol=https;AccountName=evernotstoragelpa;AccountKey=3A1WOckUjE25NfaP9KwVZGy/DKOkgwe+gyo4E27qJLeoqDUXPKtWMOLpzlCFW1wftBHzHhwQjhRSRNnuxOUXpQ==;EndpointSuffix=core.windows.net";
+            string containerName = "notes";
+
+            var container = new BlobContainerClient(connectionString, containerName);
+            //container.CreateIfNotExistsAsync
+            var blob = container.GetBlobClient(fileName);
+            await blob.UploadAsync(rtfFilePath);
+
+            return $"https://evernotstoragelpa.blob.core.windows.net/notes/{fileName}";
+
         }
     }
 }
